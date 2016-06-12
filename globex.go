@@ -25,9 +25,10 @@ func Parse(pattern string) (min, max, key string, ok bool) {
 		}
 	}
 	if len(skips) == 0 {
-		return "", "", pattern, false
+		return pattern, "", pattern, false
 	}
-	return "", "", escape(pattern, skips), false
+	key = escape(pattern, skips)
+	return key, "", key, false
 }
 func escape(pattern string, skips []int) string {
 	key := pattern
