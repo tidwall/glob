@@ -42,7 +42,7 @@
 package glob
 
 /* Glob-style pattern matching. */
-func Match(pattern, str string, nocase bool) bool {
+func match(pattern, str string, nocase bool) bool {
 	for len(pattern) > 0 {
 		switch pattern[0] {
 		case '*':
@@ -53,7 +53,7 @@ func Match(pattern, str string, nocase bool) bool {
 				return true /* match */
 			}
 			for len(str) > 0 {
-				if Match(pattern[1:], str, nocase) {
+				if match(pattern[1:], str, nocase) {
 					return true /* match */
 				}
 				str = str[1:]
