@@ -4,7 +4,7 @@ func Match(pattern, str string) bool {
 	return match(pattern, str, false)
 }
 
-func Parse(pattern string) (min, max, key string, ok bool) {
+func Parse(pattern string, desc bool) (min, max, key string, ok bool) {
 	var skips []int
 	for i := 0; i < len(pattern); i++ {
 		switch pattern[i] {
@@ -15,20 +15,29 @@ func Parse(pattern string) (min, max, key string, ok bool) {
 			min = escape(pattern[:i], skips)
 			if len(min) > 0 {
 				c := min[len(min)-1]
-				if c == 0xFF {
-					max = min + string(0)
+				if desc {
+					if c == 0x00 {
+						max = min + string(0xFF)
+					} else {
+						max = min[:len(min)-1] + string(min[len(min)-1]-1)
+					}
+					min, max = max, min
 				} else {
-					max = min[:len(min)-1] + string(min[len(min)-1]+1)
+					if c == 0xFF {
+						max = min + string(0)
+					} else {
+						max = min[:len(min)-1] + string(min[len(min)-1]+1)
+					}
 				}
 			}
 			return min, max, pattern, true
 		}
 	}
 	if len(skips) == 0 {
-		return pattern, "", pattern, false
+		return "", "", pattern, false
 	}
 	key = escape(pattern, skips)
-	return key, "", key, false
+	return "", "", key, false
 }
 func escape(pattern string, skips []int) string {
 	key := pattern
