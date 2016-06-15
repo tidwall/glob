@@ -1,6 +1,9 @@
 package glob
 
 func Match(pattern, str string) bool {
+	if pattern == "*" {
+		return true
+	}
 	return match(pattern, str, false)
 }
 
@@ -22,6 +25,13 @@ func Parse(pattern string, desc bool) (min, max, key string, ok bool) {
 						max = min[:len(min)-1] + string(min[len(min)-1]-1)
 					}
 					min, max = max, min
+					// extend the max range by one
+					c = max[len(max)-1]
+					if c == 0xFF {
+						max = max + string(0)
+					} else {
+						max = max[:len(max)-1] + string(max[len(max)-1]+1)
+					}
 				} else {
 					if c == 0xFF {
 						max = min + string(0)
@@ -39,6 +49,7 @@ func Parse(pattern string, desc bool) (min, max, key string, ok bool) {
 	key = escape(pattern, skips)
 	return "", "", key, false
 }
+
 func escape(pattern string, skips []int) string {
 	key := pattern
 	for i, j := range skips {
